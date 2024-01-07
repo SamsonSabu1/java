@@ -15,7 +15,7 @@ class Combination {
     }
 
     // method to find number of ways
-    int countWays() {
+    void countWays() {
         for (int i = 0; i <= n; i++) {
             for (int j = 0; j <= sum; j++) {
                 // base case: no coins and empty combination
@@ -24,14 +24,83 @@ class Combination {
                 } else if (j == 0) {
                     dp[i][j] = 0; // 0 ways to make a combination with 0 sum
                 } else if (coins[i - 1] <= j) {
-                    // can use current coin to make a combination
-                    dp[i][j] = dp[i - 1][j - coins[i - 1]] + dp[i - 1][j]; // ways to make comb without current coin + ways to make comb with current coin
+                    // can use the current coin to make a combination
+                    dp[i][j] = dp[i - 1][j - coins[i - 1]] + dp[i - 1][j]; // ways to make comb without the current coin + ways to make comb with the current coin
                 } else {
-                    dp[i][j] = dp[i - 1][j]; // only way to make comb without current coin
+                    dp[i][j] = dp[i - 1][j]; // only way to make comb without the current coin
                 }
             }
         }
-        return dp[n][sum]; // return number of ways
+    }
+
+    // method to find number of ways using multithreading
+    void countWaysMultithreaded() throws InterruptedException {
+        // Number of threads to create
+        int numThreads = Runtime.getRuntime().availableProcessors();
+
+        // Create and start threads
+        Thread[] threads = new Thread[numThreads];
+        for (int i = 0; i < numThreads; i++) {
+            final int threadId = i;
+            threads[i] = new Thread(new Runnable() {
+                public void run() {
+                    int start = (n * threadId) / numThreads;
+                    int end = (n * (threadId + 1)) / numThreads;
+                    for (int i = start; i < end; i++) {
+                        for (int j = 0; j <= sum; j++) {
+                            // Your existing logic here...
+                            if (i == 0) {
+                                dp[i][j] = 1;
+                            } else if (j == 0) {
+                                dp[i][j] = 0;
+                            } else if (coins[i - 1] <= j) {
+                                dp[i][j] = dp[i - 1][j - coins[i - 1]] + dp[i - 1][j];
+                            } else {
+                                dp[i][j] = dp[i - 1][j];
+                            }
+                        }
+                    }
+                }
+            });
+            threads[i].start();
+        }
+
+        // Wait for all threads to finish
+        for (Thread thread : threads) {
+            thread.join();
+        }
+    }
+
+    // method to print combinations
+    void printCombinations() {
+        List<List<Integer>> combinations = new ArrayList<>();
+        printCombinationsHelper(n, sum, new ArrayList<>(), combinations);
+
+        // Print the combinations
+        System.out.println("Combinations:");
+        for (List<Integer> combination : combinations) {
+            System.out.println(combination);
+        }
+    }
+
+    // helper method to find and print combinations
+    private void printCombinationsHelper(int i, int j, List<Integer> currentCombination, List<List<Integer>> combinations) {
+        if (i == 0 && j == 0) {
+            combinations.add(new ArrayList<>(currentCombination));
+            return;
+        }
+
+        if (i > 0 && dp[i][j] == dp[i - 1][j]) {
+            // Recur without using the current coin
+            printCombinationsHelper(i - 1, j, currentCombination, combinations);
+        }
+
+        if (i > 0 && j >= coins[i - 1] && dp[i][j] == dp[i - 1][j - coins[i - 1]] + dp[i - 1][j]) {
+            // Recur using the current coin
+            currentCombination.add(coins[i - 1]);
+            printCombinationsHelper(i - 1, j - coins[i - 1], currentCombination, combinations);
+            currentCombination.remove(currentCombination.size() - 1);
+        }
     }
 }
 
@@ -48,7 +117,7 @@ public class Main {
             coins[i] = sc.nextInt();
         }
         Combination comb = new Combination(n, sum, coins);
-        int ways = comb.countWays();
-        System.out.println("Number of ways: " + ways);
+        comb.countWays();
+        comb.printCombinations();
     }
 }
