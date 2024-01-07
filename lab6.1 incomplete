@@ -1,0 +1,54 @@
+import java.util.*;
+
+class Combination {
+    // instance variables
+    int n, sum;
+    int[] coins;
+    int[][] dp;
+
+    // constructor
+    Combination(int n, int sum, int[] coins) {
+        this.n = n;
+        this.sum = sum;
+        this.coins = coins;
+        dp = new int[n + 1][sum + 1];
+    }
+
+    // method to find number of ways
+    int countWays() {
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= sum; j++) {
+                // base case: no coins and empty combination
+                if (i == 0) {
+                    dp[i][j] = 1; // 1 way to make an empty combination
+                } else if (j == 0) {
+                    dp[i][j] = 0; // 0 ways to make a combination with 0 sum
+                } else if (coins[i - 1] <= j) {
+                    // can use current coin to make a combination
+                    dp[i][j] = dp[i - 1][j - coins[i - 1]] + dp[i - 1][j]; // ways to make comb without current coin + ways to make comb with current coin
+                } else {
+                    dp[i][j] = dp[i - 1][j]; // only way to make comb without current coin
+                }
+            }
+        }
+        return dp[n][sum]; // return number of ways
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter the number of coins: ");
+        int n = sc.nextInt();
+        System.out.print("Enter the sum: ");
+        int sum = sc.nextInt();
+        System.out.print("Enter the values of coins: ");
+        int[] coins = new int[n];
+        for (int i = 0; i < n; i++) {
+            coins[i] = sc.nextInt();
+        }
+        Combination comb = new Combination(n, sum, coins);
+        int ways = comb.countWays();
+        System.out.println("Number of ways: " + ways);
+    }
+}
