@@ -161,8 +161,8 @@ public class AmazonCRM {
         AmazonCRM acrm = new AmazonCRM();
 
        
-         Customer customer1 = new Customer(234, "Badri", 625013);
-         Customer customer2 = new Customer(235, "Jacob", 625009);
+         Customer customer1 = new Customer(234, "sam", 625013);
+         Customer customer2 = new Customer(235, "swetha", 625009);
 
          Product product1 = new Product(777, "Hp 15s");
          Product product2 = new Product(888, "Mac");
