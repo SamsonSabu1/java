@@ -1,0 +1,58 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+public class practicaltest2 {
+
+    public static void main(String[] args) {
+        Thread welcomeThread = new Thread(() -> System.out.println("welcome to java programing test 2"));
+
+
+
+        // Create a new thread that checks whether given strings are anagrams
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter two words to check if they are anagrams:");
+        String str1 = scanner.nextLine();
+        String str2 = scanner.nextLine();
+        scanner.close();
+
+        Thread checkAnagramThread = new Thread(() -> {
+            try {
+                boolean isAnagram = checkAnagram(str1, str2);
+                System.out.println("Is " + str1 + " and " + str2 + " anagrams? " + isAnagram);
+            } catch (Exception e) {
+                System.err.println("Exception in thread " + Thread.currentThread().getName() + ": " + e.getMessage());
+            }
+        });
+
+        // Start the threads
+        welcomeThread.start();
+
+        checkAnagramThread.start();
+    }
+
+
+
+
+    // Function to check whether given strings are anagrams
+    public static boolean checkAnagram(String str1, String str2) {
+        if (str1.length() != str2.length()) {
+            return false;
+        }
+
+        char[] chars1 = str1.toCharArray();
+        char[] chars2 = str2.toCharArray();
+
+        Arrays.sort(chars1);
+        Arrays.sort(chars2);
+
+        for (int i = 0; i < chars1.length; i++) {
+            if (chars1[i] != chars2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
